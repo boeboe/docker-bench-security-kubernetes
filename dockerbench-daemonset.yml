@@ -22,7 +22,8 @@ spec:
         runAsUser: 0
       containers:
         - name: docker-bench
-          image: registry.bfed-pro.intapp.eu/docker/docker-bench-security:v1.3.3
+          image: boeboe/docker-bench-security:v1.3.3
+          imagePullPolicy: Always
           resources:
             requests:
               cpu: 10m
