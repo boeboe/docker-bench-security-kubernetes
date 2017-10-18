@@ -1,0 +1,58 @@
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  name: docker-bench
+  labels:
+    name: docker-bench
+spec:
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 50%
+  template:
+    metadata:
+      labels:
+        name: docker-bench
+    spec:
+      serviceAccountName: cluster-reader
+      hostPID: true
+      hostIPC: true
+      hostNetwork: true
+      securityContext:
+        runAsUser: 0
+      containers:
+        - name: docker-bench
+          image: registry.bfed-pro.intapp.eu/docker/docker-bench-security:v1.3.3
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              cpu: 100m
+              memory: 64Mi
+          securityContext:
+            privileged: true
+            capabilities:
+              add: ["AUDIT_CONTROL"]
+          volumeMounts:
+            - name: varlib
+              mountPath: /var/lib
+            - name: varrun
+              mountPath: /var/run
+            - name: usrlib
+              mountPath: /usr/lib
+            - name: etc
+              mountPath: /etc
+      volumes:
+        - name: varlib
+          hostPath:
+            path: /var/lib
+        - name: varrun
+          hostPath:
+            path: /var/run
+        - name: usrlib
+          hostPath:
+            path: /usr/lib
+        - name: etc
+          hostPath:
+            path: /etc
